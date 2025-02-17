@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claim AppLabs</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            font-family: 'Poppins', sans-serif;
+            text-align: center;
+            padding: 20px;
+            background-image: url("https://www.transparenttextures.com/patterns/batthern.png");
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: rgba(30, 30, 30, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 25px rgba(255, 255, 255, 0.2);
+        }
+
+        h1 {
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 30px;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 12px 18px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 8px;
+            background: #222;
+            color: #fff;
+            font-size: 16px;
+            outline: none;
+            box-shadow: 0 0 10px rgba(98, 0, 234, 0.5);
+        }
+
+        .error-message {
+            color: red;
+            font-size: 14px;
+            margin-top: 5px;
+            margin-bottom: 10px;
+        }
+
+        button {
+            background: #6200ea;
+            color: #fff;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+            width: 100%;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #3700b3;
+        }
+
+        .task {
+            background: #222;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+            text-align: left;
+        }
+
+        .completed {
+            color: #00ff00;
+            font-weight: bold;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        #task1-link {
+            color: #6200ea;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        #task1-link:hover {
+            text-decoration: underline;
+        }
+
+        #submit-btn {
+            background: #03dac6;
+            color: white;
+            font-size: 16px;
+        }
+
+        #submit-btn:disabled {
+            background: #555;
+            cursor: not-allowed;
+        }
+
+        /* Notification Box */
+        .notification-box {
+            position: fixed;
+            left: 15px;
+            bottom: 15px;
+            background-color: rgba(30, 30, 30, 0.9);
+            color: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+            min-width: 300px;
+            max-width: 350px;
+            display: none;
+            z-index: 1000;
+        }
+
+        .notification-box p {
+            margin: 0;
+            font-size: 14px;
+        }
+
+        .notification-box .close-btn {
+            color: #fff;
+            font-weight: bold;
+            font-size: 20px;
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            cursor: pointer;
+        }
+
+        .notification-box .progress-bar {
+            background-color: #6200ea;
+            height: 5px;
+            width: 100%;
+            margin-top: 10px;
+            border-radius: 5px;
+            animation: progress 5s forwards;
+        }
+
+        @keyframes progress {
+            0% { width: 100%; }
+            100% { width: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Claim AppLabs</h1>
+        <div id="login-form">
+            <input type="text" id="discord-username" class="input-field" placeholder="Enter Discord Username">
+            <input type="password" id="password" class="input-field" placeholder="Enter Password (6-20 characters)">
+            <button onclick="login()">Login</button>
+            <div id="error-message" class="error-message"></div>
+        </div>
+
+        <div id="tasks" style="display:none;">
+            <h2>Tasks</h2>
+            <div class="task" id="task1">
+                <p>Download Project Play <a href="https://www.meta.com/experiences/app/9895136850502062/?utm_source=oculus&utm_medium=share" target="_blank" id="task1-link">here</a></p>
+                <span class="completed" id="task1-status" style="display:none;">✔ Completed</span>
+            </div>
+            <button id="submit-btn" class="hidden" onclick="submitCompletion()" disabled>Submit Completion</button>
+        </div>
+    </div>
+
+    <!-- Notification Box -->
+    <div id="notification" class="notification-box">
+        <span class="close-btn" onclick="closeNotification()">×</span>
+        <p id="notification-text">You have a new task to complete!</p>
+        <div class="progress-bar"></div>
+    </div>
+
+    <script>
+        let registeredUsers = JSON.parse(localStorage.getItem('registeredUsers')) || {};
+
+        function login() {
+            const username = document.getElementById('discord-username').value.trim();
+            const password = document.getElementById('password').value;
+            const errorMessageDiv = document.getElementById('error-message');
+            
+            errorMessageDiv.innerHTML = ""; // Clear previous error messages
+
+            // Validate input
+            if (!username || !password) {
+                errorMessageDiv.innerHTML = "Please enter both username and password.";
+                return;
+            }
+            if (password.length < 6 || password.length > 20) {
+                errorMessageDiv.innerHTML = "Password must be between 6 and 20 characters.";
+                return;
+            }
+            if (registeredUsers[username]) {
+                errorMessageDiv.innerHTML = "This Discord username is already registered.";
+                return;
+            }
+
+            // Save registered user
+            registeredUsers[username] = { password, completedTasks: [] };
+            localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
+            localStorage.setItem('discordUsername', username);
+            alert('Login successful!');
+            
+            // Hide login form and show tasks
+            document.getElementById('login-form').style.display = 'none';
+            document.getElementById('tasks').style.display = 'block';
+
+            showNotification("Login successful! You can now start your tasks.");
+        }
+
+        document.getElementById("task1-link").addEventListener("click", function() {
+            setTimeout(() => {
+                document.getElementById("task1-status").style.display = "inline";
+                document.getElementById("submit-btn").classList.remove("hidden");
+                document.getElementById("submit-btn").disabled = false;
+                showNotification("Task 1 completed! Click submit.");
+            }, 3000);
+        });
+
+        function submitCompletion() {
+            if (document.getElementById("submit-btn").disabled) return;
+
+            const webhookUrl = "https://discord.com/api/webhooks/1340810640679239710/rFZeW0OqK58itBP8omCEdRAq1yH2kuPpOzgITG9aJKZVh5TSQDW-R-TXPt6D4V7lrJdS";
+            const username = localStorage.getItem('discordUsername') || "Unknown User";
+            const completedTier = "Tier 1";
+
+            const payload = {
+                content: `${username} completed ${completedTier}`
+            };
+
+            fetch(webhookUrl, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert("Completion submitted!");
+                    document.getElementById("submit-btn").classList.add("hidden");
+                    document.getElementById("submit-btn").disabled = true;
+                    showNotification("Your task completion has been successfully submitted!");
+                } else {
+                    throw new Error("Failed to send webhook.");
+                }
+            })
+            .catch(error => {
+                console.error("Error sending webhook:", error);
+                showNotification("Error submitting completion.");
+            });
+        }
+
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            const notificationText = document.getElementById('notification-text');
+            notificationText.innerText = message;
+            notification.style.display = "block";
+            setTimeout(() => notification.style.display = "none", 5000); // Hide after 5 seconds
+        }
+
+        function closeNotification() {
+            const notification = document.getElementById('notification');
+            notification.style.display = "none";
+        }
+    </script>
+</body>
+</html>
