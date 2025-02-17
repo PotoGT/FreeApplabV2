@@ -1,0 +1,48 @@
+body {
+    background-color: #141414;
+    background-image: url("https://www.transparenttextures.com/patterns/cartographer.png");
+    /* This is mostly intended for prototyping; please download the pattern and re-host for production environments. Thank you! */
+    background-repeat: repeat; /* Repeats the pattern across the page */
+    background-attachment: fixed; /* Keeps the background fixed when scrolling */
+    color: #ffffff;
+    font-family: 'Poppins', sans-serif;
+    text-align: center;
+    padding: 20px;
+}
+
+.container {
+    max-width: 600px;
+    margin: auto;
+    background: #1e1e1e;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+}
+
+.task {
+    background: #222;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+}
+
+.completed {
+    color: #00ff00;
+}
+
+.hidden {
+    display: none;
+}
+
+button {
+    background: #6200ea;
+    color: #fff;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #3700b3;
+}
